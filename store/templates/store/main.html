@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+	<title>Rento</title>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1" />
+
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.1.1/css/all.css">
+
+	<script type="text/javascript">
+		var user = '{{request.user}}'
+
+		function getToken(name) {
+		    var cookieValue = null;
+		    if (document.cookie && document.cookie !== '') {
+		        var cookies = document.cookie.split(';');
+		        for (var i = 0; i < cookies.length; i++) {
+		            var cookie = cookies[i].trim();
+		            // Does this cookie string begin with the name we want?
+		            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+		                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+		                break;
+		            }
+		        }
+		    }
+		    return cookieValue;
+		}
+		var csrftoken = getToken('csrftoken')
+
+		function getCookie(name) {
+		    // Split cookie string and get all individual name=value pairs in an array
+		    var cookieArr = document.cookie.split(";");
+
+		    // Loop through the array elements
+		    for(var i = 0; i < cookieArr.length; i++) {
+		        var cookiePair = cookieArr[i].split("=");
+
+		        /* Removing whitespace at the beginning of the cookie name
+		        and compare it with the given string */
+		        if(name == cookiePair[0].trim()) {
+		            // Decode the cookie value and return
+		            return decodeURIComponent(cookiePair[1]);
+		        }
+		    }
+
+		    // Return null if not found
+		    return null;
+		}
+		var cart = JSON.parse(getCookie('cart'))
+
+		if (cart == undefined){
+			cart = {}
+			console.log('Cart Created!', cart)
+			document.cookie ='cart=' + JSON.stringify(cart) + ";domain=;path=/"
+		}
+		console.log('Cart:', cart)
+	
+	</script>
+
+</head>
+<body>
+
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+	  <img  id="logo" src="{% static 'images/logo.png' %}">
+	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+	    <span class="navbar-toggler-icon"></span>
+	  </button>
+
+	  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+	    <ul class="navbar-nav mr-auto">
+	      <li class="nav-item active">
+	        <a class="nav-link" href="{% url 'store' %}"> Store <span class="sr-only">(current)</span></a>
+	      </li>
+			<li class="nav-item active">
+	        <a class="nav-link" href="#about"> About Us<span class="sr-only">(current)</span></a>
+	      </li>
+			<li class="nav-item active">
+	        <a class="nav-link" href="#services"> Services<span class="sr-only">(current)</span></a>
+	      </li>
+			<li class="nav-item active">
+	        <a class="nav-link" href="#team"> Team<span class="sr-only">(current)</span></a>
+	      </li>
+			<li class="nav-item active">
+	        <a class="nav-link" href="#contact"> Contact Us<span class="sr-only">(current)</span></a>
+	      </li>
+	    </ul>
+	    <div class="form-inline my-2 my-lg-0">
+	     	<a class="btn btn-primary" href= "{% url 'login' %}">Login</a>
+
+	     	<a href="{% url 'cart' %}">
+	    		<img  id="cart-icon" src="{% static 'images/cart.png' %}">
+	    	</a>
+	    	<p id="cart-total">{{cartItems}}</p>
+
+	    </div>
+	  </div>
+	</nav>
+
+	<section class="header">
+		<div class="header-info">
+			<br>
+				<h1> One time stop for your engineering needs...</h1>
+		</div>
+	</section>
+
+     <div class="container">
+            <br>
+            {% block content %}
+
+
+            {% endblock content %}
+         </div>
+
+
+	<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+	<script type="text/javascript" src="{% static 'js/cart.js' %}"></script>
+	<br><br>
+
+<!------About Section------->
+	<section id="about">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-6">
+			<h1>About Us</h1>
+				<div class="about-content">
+					We understand the unique needs of engineering students. That's why we've created a specialized platform dedicated to providing the tools and resources you need to excel in your studies and projects. Whether you're looking to rent or purchase essential equipment, textbooks, or engineering software, we've got you covered.
+
+					<br>Our Mission
+
+					<br>Our mission is simple yet crucial: to empower engineering students with easy access to the tools and knowledge they need to succeed. We believe that education should be accessible and affordable, and we're committed to making that a reality for engineering students worldwide.
+
+
+				</div>
+			
+			</div>
+			<div class="col-md-6 skills-bar">
+			<p>Delivery Rate</p>
+			<div class="progress">
+			<div class="progress-bar" style="width:85%;">85%</div>
+			</div>
+
+			<p>Customer Growth</p>
+			<div class="progress">
+			<div class="progress-bar" style="width:75%;">75%</div>
+			</div>
+
+			<p>Happy Employee</p>
+			<div class="progress">
+			<div class="progress-bar" style="width:90%;">90%</div>
+			</div>
+
+			</div>
+		</div>
+
+	</div>
+	{% csrf_token %}
+	<br><br>
+<!------Services Section------->
+	<section id="services">
+
+		<div class="container">
+			<h1>Our Services</h1>
+			<br><br>
+			<div class="row services" >
+				<div class= "col-md-4 text-center">
+					<div class="icon">
+						<i class="fa fa-phone" aria-hidden="true"></i>
+					</div>
+					<h3> 24/7 Support</h3>
+					<p>on order related queries</p>
+				</div>
+
+				<div class="col-md-4 text-center">
+					<div class="icon">
+					<i class="fa fa-shopping-cart"></i>
+					</div>
+					<h3> Delivery within 24 hours</h3>
+					<p>of receiving your order</p>
+				</div>
+
+				<div class="col-md-4 text-center">
+					<div class="icon">
+					<i class="fa fa-truck"></i>
+					</div>
+					<h3>Get affordable delivery</h3>
+					<p>charged according to the distance from our center</p>
+				</div>
+			</div>
+		</div>
+
+	</section>
+	<br><br>
+
+<!-----Team------->
+<section id="team">
+
+	<div class="container">
+		<h1>Our Team</h1>
+		<div class="row">
+			<div class="col-md-3 profile-pic text-center">
+				<div class="img-box">
+				<img src="{% static 'images/gole.jpg' %}" class="img-responsive">
+				<ul>
+					<a href="https://www.instagram.com/aryn.gole/"><li><i class="fab fa-instagram-square fa-2x"></i></li></a>
+					<a href="https://github.com/AaryanGole26"><li><i class="fab fa-github fa-2x"></i></li></a>
+					<a href="https://www.linkedin.com/in/aaryan-gole/"><li><i class="fab fa-linkedin fa-2x"></i></li></a>
+				</ul>
+				</div>
+				<h2>Aaryan Gole</h2>
+				<h3>Backend developer</h3>
+
+			</div>
+
+			<div class="col-md-3 profile-pic text-center">
+				<div class="img-box">
+				<img src="{% static 'images/dnyanesh.jpg' %}" class="img-responsive">
+				<ul>
+					<a href="https://www.instagram.com/dnyanesh_panchal27/"><li><i class="fab fa-instagram-square fa-2x"></i></li></a>
+					<a href="https://github.com/Dnyanesh2709/"><li><i class="fab fa-github fa-2x"></i></li></a>
+					<a href="http://www.linkedin.com/in/dnyanesh-panchal-762b8a293"><li><i class="fab fa-linkedin fa-2x"></i></li></a>
+				</ul>
+				</div>
+				<h2>Dnyanesh Panchal</h2>
+				<h3>Frontend Developer</h3>
+
+			</div>
+
+			<div class="col-md-3 profile-pic text-center">
+				<div class="img-box">
+				<img src="{% static 'images/nitish.jpg' %}" class="img-responsive">
+				<ul>
+					<a href="https://www.instagram.com/neonitish1/"><li><i class="fab fa-instagram-square fa-2x"></i></li></a>
+					<a href="https://github.com/nitish12382/"><li><i class="fab fa-github fa-2x"></i></li></a>
+					<a href="https://www.linkedin.com/in/nitish-jha-9b0168233"><li><i class="fab fa-linkedin fa-2x"></i></li></a>
+				</ul>
+				</div>
+				<h2>Nitish Jha</h2>
+				<h3>Frontend Developer</h3>
+
+			</div>
+
+			<div class="col-md-3 profile-pic text-center">
+				<div class="img-box">
+				<img src="{% static 'images/Raunak.jpeg' %}" class="img-responsive">
+				<ul>
+					<a href="https://www.instagram.com/kanuarj/"><li><i class="fab fa-instagram-square fa-2x"></i></li></a>
+					<a href="https://github.com/kanuarj/"><li><i class="fab fa-github fa-2x"></i></li></a>
+					<a href="https://www.linkedin.com/in/raunak-joshi-274a75133/"><li><i class="fab fa-linkedin fa-2x"></i></li></a>
+				</ul>
+				</div>
+				<h2>Raunak Joshi Sir</h2>
+				<h3>Our Guide</h3>
+
+			</div>
+		</div>
+	</div>
+
+</section>
+<br><br>
+<!------COntact------------>
+<section id="contact">
+
+	<div class="container">
+		<h1>Get In Touch</h1>
+		<br><br>
+		<div class="row">
+
+			<div class="col-md-6 contact-info">
+				<div class="follow"><b><i class="fa fa-map-marker"></i>  </b>VCET,Vasai(W),Maharashtra,India</div>
+				<br><br>
+				<div class="follow"><b><i class="fa fa-mobile"></i>  </b>(+91) 9029093989</div>
+				<br><br>
+				<div class="follow"><b><i class="fa fa-envelope"></i>  </b>Rento@gmail.com</div>
+				<br><br>
+			</div>
+
+		</div>
+
+	</div>
+
+</section>
+
+</body>
+</html>
