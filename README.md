@@ -1,15 +1,3 @@
-<img src="https://r2cdn.perplexity.ai/pplx-full-logo-primary-dark%402x.png" class="logo" width="120"/>
-
-# [AaryanGole26/Rento](https://github.com/AaryanGole26/Rento)
-
-Rento - Engineer's Rental Website
-[](https://github.com/AaryanGole26/Rento#rento---engineers-rental-website)
-Mini Project SE IIIrd Sem, AY 2023-24
-
-make changes to readme.md
-
-Certainly! Below is a polished and informative README.md file for your "Rento - Engineer's Rental Website" project. It includes sections such as project description, features, installation instructions, usage, and notes relevant to your Django-based rental app.
-
 ```markdown
 # Rento - Engineer's Rental Website
 
