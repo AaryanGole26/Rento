@@ -1,5 +1,14 @@
 <!DOCTYPE html>
 {% load static %}
+{% if request.user.is_authenticated %}
+  <li class="nav-item">
+    <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+  </li>
+{% else %}
+  <li class="nav-item">
+    <a class="nav-link" href="{% url 'login' %}">Login</a>
+  </li>
+{% endif %}
 <html>
 <head>
 	<title>Rento</title>
@@ -7,10 +16,9 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1" />
 
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 	<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
-	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.1.1/css/all.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 	<script type="text/javascript">
 		var user = '{{request.user}}'
@@ -21,7 +29,6 @@
 		        var cookies = document.cookie.split(';');
 		        for (var i = 0; i < cookies.length; i++) {
 		            var cookie = cookies[i].trim();
-		            // Does this cookie string begin with the name we want?
 		            if (cookie.substring(0, name.length + 1) === (name + '=')) {
 		                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
 		                break;
@@ -33,22 +40,13 @@
 		var csrftoken = getToken('csrftoken')
 
 		function getCookie(name) {
-		    // Split cookie string and get all individual name=value pairs in an array
 		    var cookieArr = document.cookie.split(";");
-
-		    // Loop through the array elements
 		    for(var i = 0; i < cookieArr.length; i++) {
 		        var cookiePair = cookieArr[i].split("=");
-
-		        /* Removing whitespace at the beginning of the cookie name
-		        and compare it with the given string */
 		        if(name == cookiePair[0].trim()) {
-		            // Decode the cookie value and return
 		            return decodeURIComponent(cookiePair[1]);
 		        }
 		    }
-
-		    // Return null if not found
 		    return null;
 		}
 		var cart = JSON.parse(getCookie('cart'))
@@ -59,236 +57,515 @@
 			document.cookie ='cart=' + JSON.stringify(cart) + ";domain=;path=/"
 		}
 		console.log('Cart:', cart)
-	
 	</script>
+	<style>
+		:root {
+			--bg-color: #f5f7fa;
+			--card-bg: rgba(255, 255, 255, 0.9);
+			--text-color: #333;
+			--muted-text: #6c757d;
+			--border-color: #e0e0e0;
+			--primary-color: #007bff;
+			--success-color: #28a745;
+			--arrow-bg: #f0f0f0;
+			--shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+		}
 
+		[data-theme="dark"] {
+			--bg-color: #1a1a1a;
+			--card-bg: rgba(30, 30, 30, 0.9);
+			--text-color: #f5f5f5;
+			--muted-text: #a0a0a0;
+			--border-color: #444;
+			--primary-color: #4dabf7;
+			--success-color: #2ecc71;
+			--arrow-bg: #444;
+			--shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+		}
+
+		body {
+			background: var(--bg-color);
+			color: var(--text-color);
+			transition: background 0.3s, color 0.3s;
+		}
+
+		.navbar-glass {
+	background: var(--card-bg);
+	backdrop-filter: blur(18px);
+	-webkit-backdrop-filter: blur(18px);
+	box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+	border-radius: 0 0 18px 18px;
+	border: 1px solid var(--border-color);
+	padding: 0.75rem 1.5rem;
+	transition: all 0.3s ease;
+}
+
+.navbar-brand {
+	display: flex;
+	align-items: center;
+	font-weight: 600;
+	font-size: 1.25rem;
+	color: var(--text-color) !important;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+.navbar .nav-link {
+	color: var(--text-color) !important;
+	font-weight: 500;
+	margin-left: 1rem;
+	transition: all 0.3s ease;
+	position: relative;
+}
+
+.navbar .nav-link::after {
+	content: '';
+	position: absolute;
+	width: 0;
+	height: 2px;
+	bottom: -5px;
+	left: 0;
+	background-color: var(--primary-color);
+	transition: width 0.3s;
+}
+
+.navbar .nav-link:hover::after {
+	width: 100%;
+}
+
+.navbar .nav-link:hover {
+	color: var(--primary-color) !important;
+	transform: translateY(-1px);
+}
+
+.navbar-toggler {
+	border: none;
+	outline: none;
+}
+
+.navbar-toggler-icon {
+	width: 24px;
+	height: 24px;
+	background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba%280, 0, 0, 0.7%29' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+	background-size: contain;
+	background-repeat: no-repeat;
+	transition: transform 0.3s ease;
+}
+
+.navbar-toggler:focus .navbar-toggler-icon {
+	transform: rotate(90deg);
+}
+
+#logo {
+	height: 40px;
+	margin-right: 12px;
+}
+
+
+		#cart-icon {
+			width: 30px;
+			margin-left: 15px;
+		}
+
+		#cart-total {
+			position: absolute;
+			top: 10px;
+			right: 30px;
+			background: #ff4d4d;
+			color: var(--text-color);
+			font-size: 12px;
+			padding: 2px 6px;
+			border-radius: 50%;
+		}
+
+		#logo {
+			height: 40px;
+			margin-right: 10px;
+		}
+
+		.service-card {
+			background: var(--card-bg);
+			transition: all 0.3s ease;
+			border: 2px solid transparent;
+		}
+
+		.service-card:hover {
+			transform: translateY(-10px);
+			border-color: var(--primary-color);
+			box-shadow: var(--shadow, 0 12px 30px rgba(0, 0, 0, 0.1));
+		}
+
+		.service-card i {
+			transition: color 0.3s ease;
+		}
+
+		.service-card:hover i {
+			color: var(--primary-color);
+		}
+
+		.card {
+			border-radius: 1rem;
+			transition: all 0.3s ease;
+			background: var(--card-bg);
+		}
+
+		.card:hover {
+			box-shadow: var(--shadow, 0 8px 30px rgba(0, 0, 0, 0.1));
+			transform: scale(1.01);
+		}
+
+		.form-control:focus {
+			border-color: var(--primary-color);
+			box-shadow: 0 0 0 0.15rem rgba(0, 123, 255, 0.25);
+		}
+
+		.btn-primary {
+			background-color: var(--primary-color);
+			border-color: var(--primary-color);
+			transition: 0.3s ease;
+		}
+
+		.btn-primary:hover {
+			background-color: #0056b3;
+			transform: scale(1.02);
+		}
+
+		.btn-outline-primary {
+			color: var(--primary-color) !important;
+			border-color: var(--primary-color) !important;
+		}
+
+		.btn-outline-primary:hover {
+			background-color: var(--primary-color) !important;
+			color: white !important;
+		}
+
+		.btn-success {
+			background-color: var(--success-color) !important;
+			border-color: var(--success-color) !important;
+		}
+
+		.text-dark {
+			color: var(--text-color) !important;
+		}
+
+		.text-muted {
+			color: var(--muted-text) !important;
+		}
+
+		.social-icon {
+			margin-right: 15px;
+		}
+
+		.social-icon:last-child {
+			margin-right: 0;
+		}
+
+		.chg-quantity {
+			background: var(--arrow-bg);
+			border-radius: 4px;
+			padding: 2px;
+			box-shadow: var(--shadow, 0 2px 4px rgba(0, 0, 0, 0.1));
+			transition: transform 0.2s, box-shadow 0.2s;
+		}
+
+		.chg-quantity:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+		}
+
+		/* Dark mode adjustments for icons */
+		[data-theme="dark"] #logo,
+		[data-theme="dark"] #cart-icon {
+			filter: brightness(0) invert(1);
+		}
+	</style>
 </head>
 <body>
+	<script>
+  <script>
+$(function() {
+  $('.nav-link').on('click', function () {
+    $('.navbar-collapse').collapse('hide');
+  });
+  // Toggler state sync
+  $('.navbar-collapse').on('hidden.bs.collapse shown.bs.collapse', function() {
+    $('.navbar-toggler').toggleClass('collapsed', !$(this).hasClass('show'));
+  });
+});
+</script>
 
-	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-	  <img  id="logo" src="{% static 'images/logo.png' %}">
-	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-	    <span class="navbar-toggler-icon"></span>
-	  </button>
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-6oFJpLBCn3k9mS+XN+BqNf5h+dYtFrYus6XbwR3VfAn1Z+S5Jd9EV5A0U8C7b8iR"
+  crossorigin="anonymous"></script>
 
-	  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-	    <ul class="navbar-nav mr-auto">
-	      <li class="nav-item active">
-	        <a class="nav-link" href="{% url 'store' %}"> Store <span class="sr-only">(current)</span></a>
-	      </li>
-			<li class="nav-item active">
-	        <a class="nav-link" href="#about"> About Us<span class="sr-only">(current)</span></a>
-	      </li>
-			<li class="nav-item active">
-	        <a class="nav-link" href="#services"> Services<span class="sr-only">(current)</span></a>
-	      </li>
-			<li class="nav-item active">
-	        <a class="nav-link" href="#team"> Team<span class="sr-only">(current)</span></a>
-	      </li>
-			<li class="nav-item active">
-	        <a class="nav-link" href="#contact"> Contact Us<span class="sr-only">(current)</span></a>
-	      </li>
-	    </ul>
-	    <div class="form-inline my-2 my-lg-0">
-	     	<a class="btn btn-primary" href= "{% url 'login' %}">Login</a>
+	<nav class="navbar navbar-expand-lg navbar-glass fixed-top">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center" href="{% url 'store' %}">
+      <img id="logo" src="{% static 'images/logo.png' %}" alt="Rento Logo" />
+      <span class="ml-2" style="font-weight:600; font-size:1.25rem; text-transform:uppercase; letter-spacing:0.5px; color: var(--text-color);"></span>
+    </a>
 
-	     	<a href="{% url 'cart' %}">
-	    		<img  id="cart-icon" src="{% static 'images/cart.png' %}">
-	    	</a>
-	    	<p id="cart-total">{{cartItems}}</p>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-toggle="collapse"
+      data-target="#navbarContent"
+      aria-controls="navbarContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-	    </div>
-	  </div>
-	</nav>
+    <div class="collapse navbar-collapse" id="navbarContent">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item"><a class="nav-link" href="#about">About Us</a></li>
+        <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
+        <li class="nav-item"><a class="nav-link" href="#team">Team</a></li>
+        <li class="nav-item"><a class="nav-link" href="#contact">Contact Us</a></li>
 
-	<section class="header">
-		<div class="header-info">
-			<br>
-				<h1> One time stop for your engineering needs...</h1>
-		</div>
-	</section>
+        {% if request.user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link" href="#" style="font-weight: 500; color: var(--text-color);">
+              Welcome, {{ request.user.username }}
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+          </li>
+        {% else %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'login' %}">Login</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'signup' %}">Sign Up</a>
+          </li>
+        {% endif %}
+      </ul>
 
-     <div class="container">
-            <br>
-            {% block content %}
+      <div class="ml-lg-3 d-flex align-items-center">
+        <a href="{% url 'cart' %}" class="position-relative d-flex align-items-center">
+          <img id="cart-icon" src="{% static 'images/cart.png' %}" alt="Cart" />
+          <p id="cart-total" class="mb-0 ml-1" style="color: var(--text-color);">{{ cartItems }}</p>
+        </a>
 
+        <button
+          id="theme-toggle"
+          class="btn btn-outline-secondary ml-2"
+          style="
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            line-height: 40px;
+            text-align: center;
+          "
+          aria-label="Toggle Theme"
+        >
+          <i class="fas fa-adjust"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
 
-            {% endblock content %}
-         </div>
+<!-- Spacer for fixed navbar -->
+<div style="height: 80px;"></div>
+	<div class="container">
+		<br>
+		{% block content %}
+		{% endblock content %}
+	</div>
 
-
-	<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
-
-	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-
-	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-
+	<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="{% static 'js/cart.js' %}"></script>
+	<script>
+		const themeToggle = document.getElementById('theme-toggle');
+		const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+		let currentTheme = localStorage.getItem('theme') || (prefersDark.matches ? 'dark' : 'light');
+
+		function setTheme(theme) {
+			document.documentElement.setAttribute('data-theme', theme);
+			localStorage.setItem('theme', theme);
+			themeToggle.innerHTML = theme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-adjust"></i>';
+			// Adjust logo and cart icon for dark mode
+			const logo = document.getElementById('logo');
+			const cartIcon = document.getElementById('cart-icon');
+			if (theme === 'dark') {
+				logo.style.filter = 'brightness(0) invert(1)';
+				cartIcon.style.filter = 'brightness(0) invert(1)';
+			} else {
+				logo.style.filter = 'none';
+				cartIcon.style.filter = 'none';
+			}
+		}
+
+		setTheme(currentTheme);
+
+		themeToggle.addEventListener('click', () => {
+			currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+			setTheme(currentTheme);
+		});
+
+		prefersDark.addEventListener('change', e => {
+			setTheme(e.matches ? 'dark' : 'light');
+		});
+	</script>
 	<br><br>
 
-<!------About Section------->
-	<section id="about">
-	<div class="container">
-		<div class="row">
-			<div class="col-md-6">
-			<h1>About Us</h1>
-				<div class="about-content">
-					We understand the unique needs of engineering students. That's why we've created a specialized platform dedicated to providing the tools and resources you need to excel in your studies and projects. Whether you're looking to rent or purchase essential equipment, textbooks, or engineering software, we've got you covered.
-
-					<br>Our Mission
-
-					<br>Our mission is simple yet crucial: to empower engineering students with easy access to the tools and knowledge they need to succeed. We believe that education should be accessible and affordable, and we're committed to making that a reality for engineering students worldwide.
-
-
-				</div>
-			
-			</div>
-			<div class="col-md-6 skills-bar">
-			<p>Delivery Rate</p>
-			<div class="progress">
-			<div class="progress-bar" style="width:85%;">85%</div>
-			</div>
-
-			<p>Customer Growth</p>
-			<div class="progress">
-			<div class="progress-bar" style="width:75%;">75%</div>
-			</div>
-
-			<p>Happy Employee</p>
-			<div class="progress">
-			<div class="progress-bar" style="width:90%;">90%</div>
-			</div>
-
-			</div>
-		</div>
-
-	</div>
-	{% csrf_token %}
-	<br><br>
-<!------Services Section------->
-	<section id="services">
-
+	<!-- About Section -->
+	<section id="about" class="py-5" style="background: var(--bg-color);">
 		<div class="container">
-			<h1>Our Services</h1>
-			<br><br>
-			<div class="row services" >
-				<div class= "col-md-4 text-center">
-					<div class="icon">
-						<i class="fa fa-phone" aria-hidden="true"></i>
-					</div>
-					<h3> 24/7 Support</h3>
-					<p>on order related queries</p>
-				</div>
-
-				<div class="col-md-4 text-center">
-					<div class="icon">
-					<i class="fa fa-shopping-cart"></i>
-					</div>
-					<h3> Delivery within 24 hours</h3>
-					<p>of receiving your order</p>
-				</div>
-
-				<div class="col-md-4 text-center">
-					<div class="icon">
-					<i class="fa fa-truck"></i>
-					</div>
-					<h3>Get affordable delivery</h3>
-					<p>charged according to the distance from our center</p>
+			<h2 class="mb-4 text-center" style="color: var(--text-color);">About Us</h2>
+			<div class="row align-items-center">
+				<div class="col-md-12">
+					<p class="lead text-muted">
+						At Rento, we understand the unique needs of engineering students. That’s why we’ve created a specialized platform dedicated to providing the tools and resources you need to excel in your studies and projects.
+					</p>
+					<p style="color: var(--text-color);">
+						Whether you're looking to rent or purchase essential equipment, textbooks, or engineering software — we've got you covered.
+					</p>
+					<p style="color: var(--text-color);">
+						<strong>Our Mission:</strong> To empower engineering students with easy access to affordable tools and knowledge. We believe that education should be accessible and strive to make that a reality worldwide.
+					</p>
 				</div>
 			</div>
 		</div>
-
 	</section>
-	<br><br>
 
-<!-----Team------->
-<section id="team">
-
-	<div class="container">
-		<h1>Our Team</h1>
-		<div class="row">
-			<div class="col-md-3 profile-pic text-center">
-				<div class="img-box">
-				<img src="{% static 'images/gole.jpg' %}" class="img-responsive">
-				<ul>
-					<a href="https://www.instagram.com/aryn.gole/"><li><i class="fab fa-instagram-square fa-2x"></i></li></a>
-					<a href="https://github.com/AaryanGole26"><li><i class="fab fa-github fa-2x"></i></li></a>
-					<a href="https://www.linkedin.com/in/aaryan-gole/"><li><i class="fab fa-linkedin fa-2x"></i></li></a>
-				</ul>
+	<!-- OUR SERVICES -->
+	<section id="services" class="py-5" style="background: var(--bg-color);">
+		<div class="container text-center">
+			<h2 class="mb-5 fw-bold" style="color: var(--text-color);">Our Services</h2>
+			<div class="row g-4">
+				<!-- Service Card 1 -->
+				<div class="col-md-4">
+					<div class="service-card p-4 shadow-sm rounded-4 h-100">
+						<i class="fas fa-code fa-3x mb-3 text-primary"></i>
+						<h4 class="fw-semibold" style="color: var(--text-color);">Web Development</h4>
+						<p class="text-muted">We build responsive, fast, and user-friendly websites using modern tech stacks.</p>
+					</div>
 				</div>
-				<h2>Aaryan Gole</h2>
-				<h3>Backend developer</h3>
 
-			</div>
-
-			<div class="col-md-3 profile-pic text-center">
-				<div class="img-box">
-				<img src="{% static 'images/dnyanesh.jpg' %}" class="img-responsive">
-				<ul>
-					<a href="https://www.instagram.com/dnyanesh_panchal27/"><li><i class="fab fa-instagram-square fa-2x"></i></li></a>
-					<a href="https://github.com/Dnyanesh2709/"><li><i class="fab fa-github fa-2x"></i></li></a>
-					<a href="http://www.linkedin.com/in/dnyanesh-panchal-762b8a293"><li><i class="fab fa-linkedin fa-2x"></i></li></a>
-				</ul>
+				<!-- Service Card 2 -->
+				<div class="col-md-4">
+					<div class="service-card p-4 shadow-sm rounded-4 h-100">
+						<i class="fas fa-robot fa-3x mb-3 text-primary"></i>
+						<h4 class="fw-semibold" style="color: var(--text-color);">AI Solutions</h4>
+						<p class="text-muted">From chatbots to automation, we build smart AI systems to scale your business.</p>
+					</div>
 				</div>
-				<h2>Dnyanesh Panchal</h2>
-				<h3>Frontend Developer</h3>
 
-			</div>
-
-			<div class="col-md-3 profile-pic text-center">
-				<div class="img-box">
-				<img src="{% static 'images/nitish.jpg' %}" class="img-responsive">
-				<ul>
-					<a href="https://www.instagram.com/neonitish1/"><li><i class="fab fa-instagram-square fa-2x"></i></li></a>
-					<a href="https://github.com/nitish12382/"><li><i class="fab fa-github fa-2x"></i></li></a>
-					<a href="https://www.linkedin.com/in/nitish-jha-9b0168233"><li><i class="fab fa-linkedin fa-2x"></i></li></a>
-				</ul>
+				<!-- Service Card 3 -->
+				<div class="col-md-4">
+					<div class="service-card p-4 shadow-sm rounded-4 h-100">
+						<i class="fas fa-paint-brush fa-3x mb-3 text-primary"></i>
+						<h4 class="fw-semibold" style="color: var(--text-color);">UI/UX Design</h4>
+						<p class="text-muted">Our design approach ensures smooth, delightful experiences across all devices.</p>
+					</div>
 				</div>
-				<h2>Nitish Jha</h2>
-				<h3>Frontend Developer</h3>
-
-			</div>
-
-			<div class="col-md-3 profile-pic text-center">
-				<div class="img-box">
-				<img src="{% static 'images/Raunak.jpeg' %}" class="img-responsive">
-				<ul>
-					<a href="https://www.instagram.com/kanuarj/"><li><i class="fab fa-instagram-square fa-2x"></i></li></a>
-					<a href="https://github.com/kanuarj/"><li><i class="fab fa-github fa-2x"></i></li></a>
-					<a href="https://www.linkedin.com/in/raunak-joshi-274a75133/"><li><i class="fab fa-linkedin fa-2x"></i></li></a>
-				</ul>
-				</div>
-				<h2>Raunak Joshi Sir</h2>
-				<h3>Our Guide</h3>
-
 			</div>
 		</div>
-	</div>
+	</section>
 
-</section>
-<br><br>
-<!------COntact------------>
-<section id="contact">
+	<!-- Team Section -->
+	<section id="team" style="padding: 60px 0; background: var(--bg-color);">
+		<div class="container">
+			<h1 class="text-center mb-5" style="font-weight: 700; color: var(--text-color);">Meet Our Team</h1>
+			<div class="row justify-content-center">
+				<!-- Aaryan Gole -->
+				<div class="col-lg-3 col-md-6 mb-4 d-flex align-items-stretch">
+					<div class="card shadow-sm border-0 w-100 text-center">
+						<div class="card-body">
+							<img src="{% static 'images/gole.jpg' %}" alt="Aaryan Gole" class="rounded-circle mb-3 img-fluid" style="width: 120px; height: 120px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+							<h5 class="card-title mb-1" style="font-weight: 600; color: var(--text-color);">Aaryan Gole</h5>
+							<p class="card-subtitle text-muted mb-3">Backend Developer</p>
+							<div class="d-flex justify-content-center">
+								<a href="https://www.instagram.com/aryn.gole/" target="_blank" class="social-icon" style="color: var(--text-color);"><i class="fab fa-instagram fa-lg"></i></a>
+								<a href="https://github.com/AaryanGole26" target="_blank" class="social-icon" style="color: var(--text-color);"><i class="fab fa-github fa-lg"></i></a>
+								<a href="https://www.linkedin.com/in/aaryan-gole/" target="_blank" class="social-icon" style="color: var(--text-color);"><i class="fab fa-linkedin fa-lg"></i></a>
+							</div>
+						</div>
+					</div>
+				</div>
 
-	<div class="container">
-		<h1>Get In Touch</h1>
-		<br><br>
-		<div class="row">
+				<!-- Dnyanesh Panchal -->
+				<div class="col-lg-3 col-md-6 mb-4 d-flex align-items-stretch">
+					<div class="card shadow-sm border-0 w-100 text-center">
+						<div class="card-body">
+							<img src="{% static 'images/dn.jpg' %}" alt="Dnyanesh Panchal" class="rounded-circle mb-3 img-fluid" style="width: 120px; height: 120px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+							<h5 class="card-title mb-1" style="font-weight: 600; color: var(--text-color);">Dnyanesh Panchal</h5>
+							<p class="card-subtitle text-muted mb-3">Frontend Developer</p>
+							<div class="d-flex justify-content-center">
+								<a href="https://www.instagram.com/dnyanesh_panchal27/" target="_blank" class="social-icon" style="color: var(--text-color);"><i class="fab fa-instagram fa-lg"></i></a>
+								<a href="https://github.com/Dnyanesh2709/" target="_blank" class="social-icon" style="color: var(--text-color);"><i class="fab fa-github fa-lg"></i></a>
+								<a href="http://www.linkedin.com/in/dnyanesh-panchal-762b8a293" target="_blank" class="social-icon" style="color: var(--text-color);"><i class="fab fa-linkedin fa-lg"></i></a>
+							</div>
+						</div>
+					</div>
+				</div>
 
-			<div class="col-md-6 contact-info">
-				<div class="follow"><b><i class="fa fa-map-marker"></i>  </b>VCET,Vasai(W),Maharashtra,India</div>
-				<br><br>
-				<div class="follow"><b><i class="fa fa-mobile"></i>  </b>(+91) 9029093989</div>
-				<br><br>
-				<div class="follow"><b><i class="fa fa-envelope"></i>  </b>Rento@gmail.com</div>
-				<br><br>
+				<!-- Nitish Jha -->
+				<div class="col-lg-3 col-md-6 mb-4 d-flex align-items-stretch">
+					<div class="card shadow-sm border-0 w-100 text-center">
+						<div class="card-body">
+							<img src="{% static 'images/nitish.jpg' %}" alt="Nitish Jha" class="rounded-circle mb-3 img-fluid" style="width: 120px; height: 120px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+							<h5 class="card-title mb-1" style="font-weight: 600; color: var(--text-color);">Nitish Jha</h5>
+							<p class="card-subtitle text-muted mb-3">Frontend Developer</p>
+							<div class="d-flex justify-content-center">
+								<a href="https://www.instagram.com/neonitish1/" target="_blank" class="social-icon" style="color: var(--text-color);"><i class="fab fa-instagram fa-lg"></i></a>
+								<a href="https://github.com/nitish12382/" target="_blank" class="social-icon" style="color: var(--text-color);"><i class="fab fa-github fa-lg"></i></a>
+								<a href="https://www.linkedin.com/in/nitish-jha-9b0168233" target="_blank" class="social-icon" style="color: var(--text-color);"><i class="fab fa-linkedin fa-lg"></i></a>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Raunak Joshi Sir -->
+				<div class="col-lg-3 col-md-6 mb-4 d-flex align-items-stretch">
+					<div class="card shadow-sm border-0 w-100 text-center">
+						<div class="card-body">
+							<img src="{% static 'images/Raunak.jpeg' %}" alt="Raunak Joshi" class="rounded-circle mb-3 img-fluid" style="width: 120px; height: 120px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+							<h5 class="card-title mb-1" style="font-weight: 600; color: var(--text-color);">Raunak Joshi Sir</h5>
+							<p class="card-subtitle text-muted mb-3">Our Guide</p>
+							<div class="d-flex justify-content-center">
+								<a href="https://www.instagram.com/kanuarj/" target="_blank" class="social-icon" style="color: var(--text-color);"><i class="fab fa-instagram fa-lg"></i></a>
+								<a href="https://github.com/kanuarj/" target="_blank" class="social-icon" style="color: var(--text-color);"><i class="fab fa-github fa-lg"></i></a>
+								<a href="https://www.linkedin.com/in/raunak-joshi-274a75133/" target="_blank" class="social-icon" style="color: var(--text-color);"><i class="fab fa-linkedin fa-lg"></i></a>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
-
 		</div>
+	</section>
 
-	</div>
-
-</section>
-
+	<!-- Contact Section -->
+	<section id="contact" class="py-5" style="background: var(--bg-color);">
+		<div class="container">
+			<h2 class="text-center mb-4" style="color: var(--text-color);">Get In Touch</h2>
+			<div class="row">
+				<div class="col-md-6">
+					<ul class="list-unstyled lead">
+						<li class="mb-3"><i class="fa fa-map-marker-alt text-danger mr-2"></i><strong style="color: var(--text-color);">Address:</strong> VCET, Vasai (W), Maharashtra, India</li>
+						<li class="mb-3"><i class="fa fa-phone text-success mr-2"></i><strong style="color: var(--text-color);">Phone:</strong> (+91) 9876543210</li>
+						<li><i class="fa fa-envelope text-primary mr-2"></i><strong style="color: var(--text-color);">Email:</strong> rento@gmail.com</li>
+					</ul>
+				</div>
+				<div class="col-md-6">
+					<div class="card shadow-sm p-0 border-0 rounded-4 h-100 overflow-hidden" style="background: var(--card-bg);">
+						<iframe 
+							src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3770.123456789!2d72.82871621126176!3d19.383983406215687!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7b15e17779a35%3A0x20bc78f13d814309!2sVidyavardhini%27s%20College%20of%20Engineering%20and%20Technology!5e0!3m2!1sen!2sin!4v1722193444!5m2!1sen!2sin"
+							width="100%" height="200" style="border:0; min-height: 200px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+						</iframe>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
 </body>
 </html>
