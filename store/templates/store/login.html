@@ -151,6 +151,7 @@ button{
         <button type="submit">Log In</button>
         {% csrf_token %}
         <a href="{% url 'signup' %}" >Create an account</a>
+        <a href="{% url 'forgot_password' %}" style="text-align:center; margin-top:15px;">Forgot Password?</a>
         {% csrf_token %}
     </form>
 </body>
