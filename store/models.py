@@ -1,16 +1,27 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 # Create your models here.
 
+@receiver(post_save, sender=User)
+def create_customer(sender, instance, created, **kwargs):
+    if created:
+        Customer.objects.create(user=instance)
+
 class Customer(models.Model):
-	user = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE)
-	name = models.CharField(max_length=200, null=True)
-	email = models.CharField(max_length=200)
+    user = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE)
+    name = models.CharField(max_length=200, null=True)
+    email = models.CharField(max_length=200)
 
-	def __str__(self):
-		return self.name
-
+    def __str__(self):
+        if self.name:
+            return self.name
+        elif self.user:
+            return f"{self.user.username}"
+        else:
+            return f"Customer {self.pk or 'Unknown'}"
 
 class Product(models.Model):
 	name = models.CharField(max_length=200)
