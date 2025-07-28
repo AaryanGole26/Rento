@@ -1,4 +1,3 @@
-```markdown
 # Rento - Engineer's Rental Website
 
 Mini Project SE IIIrd Sem, AY 2023-24
@@ -131,5 +130,3 @@ This project is currently for academic purposes. Feel free to fork and modify it
 ## License
 
 This project is provided as-is for educational use.
-
-
