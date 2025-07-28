@@ -1,21 +1,76 @@
 {% extends 'store/main.html' %}
 {% load static %}
 {% block content %}
-	<div class="row">
-		{% for product in products %}
-		<div class="col-lg-4">
-			<img class="thumbnail" src="{{product.imageURL}}">
+
+<style>
+	.thumbnail {
+		width: 100%;
+		height: 220px;
+		object-fit: cover;
+		border-radius: 12px 12px 0 0;
+		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+		transition: transform 0.3s ease;
+	}
+
+	.thumbnail:hover {
+		transform: scale(1.02);
+	}
+
+	.box-element.product {
+		background: rgba(255, 255, 255, 0.8);
+		backdrop-filter: blur(6px);
+		-webkit-backdrop-filter: blur(6px);
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+		padding: 20px;
+		border-radius: 0 0 12px 12px;
+		transition: all 0.3s ease;
+		margin-bottom: 40px;
+	}
+
+	.box-element.product:hover {
+		transform: translateY(-5px);
+		box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+	}
+
+	.add-btn {
+		border-radius: 8px;
+		font-weight: 500;
+		transition: all 0.2s ease;
+	}
+
+	.add-btn:hover {
+		background-color: #007bff;
+		color: white;
+		border-color: #007bff;
+	}
+
+	h6 strong {
+		font-size: 1.1rem;
+		color: #333;
+	}
+
+	h4 strong {
+		color: #28a745;
+		font-weight: 600;
+	}
+</style>
+
+<div class="row">
+	{% for product in products %}
+	<div class="col-lg-4 col-md-6 mb-4 d-flex align-items-stretch">
+		<div class="w-100">
+			<img class="thumbnail" src="{{ product.imageURL }}">
 			<div class="box-element product">
-				<h6><strong>{{product.name}}</strong></h6>
+				<h6><strong>{{ product.name }}</strong></h6>
 				<hr>
-
-				<button data-product="{{product.id}}" data-action="add" class="btn btn-outline-secondary add-btn update-cart">Add to Cart</button>
-				
-				<h4 style="display: inline-block; float: right"><strong>₹ {{product.price}}</strong></h4>
-
+				<button data-product="{{ product.id }}" data-action="add" class="btn btn-outline-secondary add-btn update-cart">
+					Add to Cart
+				</button>
+				<h4 style="display: inline-block; float: right"><strong>$ {{ product.price }}</strong></h4>
 			</div>
 		</div>
-		{% endfor %}
 	</div>
+	{% endfor %}
+</div>
 
 {% endblock content %}
