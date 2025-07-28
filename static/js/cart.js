@@ -1,63 +1,71 @@
-var updateBtns = document.getElementsByClassName('update-cart')
+const updateBtns = document.querySelectorAll('.update-cart');
 
-for (i = 0; i < updateBtns.length; i++) {
-	updateBtns[i].addEventListener('click', function(){
-		var productId = this.dataset.product
-		var action = this.dataset.action
-		console.log('productId:', productId, 'Action:', action)
-		console.log('USER:', user)
+updateBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const productId = btn.dataset.product;
+    const action = btn.dataset.action;
+    console.log('Product ID:', productId, 'Action:', action);
+    console.log('USER:', user);
 
-		if (user == 'AnonymousUser'){
-			addCookieItem(productId, action)
-		}else{
-			updateUserOrder(productId, action)
-		}
-	})
+    if (user === 'AnonymousUser') {
+      handleCartWithCookies(productId, action);
+    } else {
+      sendCartUpdateToServer(productId, action);
+    }
+  });
+});
+
+function sendCartUpdateToServer(productId, action) {
+  console.log('Authenticated user, updating server cart...');
+  fetch('/update_item/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': csrftoken,
+    },
+    body: JSON.stringify({ productId, action }),
+  })
+    .then(res => res.json())
+    .then(data => {
+      // Fetch new cart count after update
+      fetch('/cart_data/')
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById('cart-total').innerText = data.cartItems;
+        });
+    });
 }
 
-function updateUserOrder(productId, action){
-	console.log('User is authenticated, sending data...')
+function handleCartWithCookies(productId, action) {
+  console.log('Anonymous user, modifying cart in cookies...');
 
-		var url = '/update_item/'
+  if (action === 'add') {
+    if (!cart[productId]) {
+      cart[productId] = { quantity: 1 };
+    } else {
+      cart[productId].quantity += 1;
+    }
+  }
 
-		fetch(url, {
-			method:'POST',
-			headers:{
-				'Content-Type':'application/json',
-				'X-CSRFToken':csrftoken,
-			}, 
-			body:JSON.stringify({'productId':productId, 'action':action})
-		})
-		.then((response) => {
-		   return response.json();
-		})
-		.then((data) => {
-		    location.reload()
-		});
+  if (action === 'remove') {
+    cart[productId].quantity -= 1;
+    if (cart[productId].quantity <= 0) {
+      delete cart[productId];
+    }
+  }
+
+  console.log('Updated CART:', cart);
+  document.cookie = 'cart=' + JSON.stringify(cart) + ';domain=;path=/';
+  updateCartBadge();
 }
 
-function addCookieItem(productId, action){
-	console.log('User is not authenticated')
+function updateCartBadge() {
+  const totalItems = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
+  const badge = document.getElementById('cart-total');
+  if (badge) {
+    badge.innerText = totalItems;
+  }
+} 
 
-	if (action == 'add'){
-		if (cart[productId] == undefined){
-		cart[productId] = {'quantity':1}
-
-		}else{
-			cart[productId]['quantity'] += 1
-		}
-	}
-
-	if (action == 'remove'){
-		cart[productId]['quantity'] -= 1
-
-		if (cart[productId]['quantity'] <= 0){
-			console.log('Item should be deleted')
-			delete cart[productId];
-		}
-	}
-	console.log('CART:', cart)
-	document.cookie ='cart=' + JSON.stringify(cart) + ";domain=;path=/"
-	
-	location.reload()
-}
+// Ensure cart badge is always correct on load
+window.addEventListener('DOMContentLoaded', updateCartBadge);
