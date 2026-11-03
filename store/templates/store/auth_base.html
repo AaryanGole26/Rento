@@ -1,0 +1,19 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-lock-theme>
+<head>
+  <title>{% block title %}Rento{% endblock %}</title>
+  {% include 'store/_head.html' %}
+</head>
+<body class="auth-page blueprint">
+  <div id="nav-progress" aria-hidden="true"></div>
+  <div class="auth-stage">
+    <span class="auth-shape auth-shape-blue" aria-hidden="true"></span>
+    <span class="auth-shape auth-shape-yellow" aria-hidden="true"></span>
+    <div class="auth-card surface">
+      <a href="{% url 'store' %}" aria-label="Rento home"><img class="auth-logo" src="{% static 'images/logo.png' %}" alt="Rento" width="102" height="45"></a>
+      {% block card %}{% endblock card %}
+    </div>
+  </div>
+  <script src="{% static 'js/ui.js' %}" defer></script>
+</body>
+</html>

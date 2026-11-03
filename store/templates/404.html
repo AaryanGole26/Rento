@@ -1,0 +1,9 @@
+{% extends 'store/auth_base.html' %}
+
+{% block title %}Page Not Found | Rento{% endblock %}
+
+{% block card %}
+<h1>Page Not Found</h1>
+<p class="help">The page you're looking for doesn't exist or may have moved.</p>
+<a class="btn btn-brand" href="{% url 'store' %}">Back to Rento</a>
+{% endblock card %}

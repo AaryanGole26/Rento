@@ -1,68 +1,45 @@
 {% extends 'store/main.html' %}
-{% load static %}
+
+{% block title %}Your Cart | Rento{% endblock %}
 
 {% block content %}
-<div class="container my-5">
-  <!-- Order Summary Card -->
-  <div class="card shadow-sm rounded-4 mb-4 border-0" style="background-color: var(--card-bg, #ffffff);">
-    <div class="card-body p-4">
-      <a class="btn btn-outline-primary mb-3" href="{% url 'store' %}">
-        <i class="fas fa-arrow-left mr-2"></i> Continue Shopping
-      </a>
-
-      <div class="d-flex flex-wrap justify-content-between align-items-center">
-        <h5 class="mb-0" style="color: var(--text-color, #222);">
-          Items: <strong>{{ order.get_cart_items }}</strong>
-        </h5>
-        <h5 class="mb-0" style="color: var(--text-color, #222);">
-          Total: <strong>$ {{ order.get_cart_total|floatformat:2 }}</strong>
-        </h5>
-        <a class="btn btn-success mt-2 mt-md-0" href="{% url 'checkout' %}">Proceed to Checkout</a>
-      </div>
-    </div>
-  </div>
-
-  <!-- Cart Items Table -->
-  <div class="card shadow-sm rounded-4 border-0" style="background-color: var(--card-bg, #ffffff);">
-    <div class="card-body p-4">
-      <div class="d-none d-md-flex fw-bold border-bottom pb-2 mb-3 text-secondary">
-        <div class="flex-grow-1">Product</div>
-        <div class="w-25">Price</div>
-        <div class="w-25">Quantity</div>
-        <div class="w-25">Total</div>
-      </div>
-
+<h1 class="section-title">Your Cart</h1>
+<div id="cart-content">
+  {% if items %}
+  <div class="cart-layout">
+    <section class="cart-items surface" aria-label="Cart items">
       {% for item in items %}
-      <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between py-3 border-bottom">
-        <!-- Product Info -->
-        <div class="d-flex align-items-center flex-grow-1 mb-2 mb-md-0">
-          <img src="{{ item.product.imageURL }}" class="rounded mr-3" style="width: 70px; height: 70px; object-fit: cover;">
-          <div class="ml-3">
-            <h6 class="mb-1 text-dark">{{ item.product.name }}</h6>
-          </div>
+      <div class="cart-row">
+        <img class="row-image" src="{{ item.product.imageURL }}" alt="{{ item.product.name }}" width="72" height="72">
+        <div class="row-main">
+          <h3>{{ item.product.name }}</h3>
+          <p>{{ currency_symbol }}{{ item.product.price|floatformat:2 }} each</p>
         </div>
-
-        <!-- Price -->
-        <div class="w-25 text-dark">$ {{ item.product.price|floatformat:2 }}</div>
-
-        <!-- Quantity -->
-        <div class="w-25 text-dark">
-          <div class="d-flex align-items-center gap-2">
-            <img data-product="{{ item.product.id }}" data-action="add" class="update-cart"
-              src="{% static 'images/arrow-up.png' %}" style="width: 24px; cursor: pointer;">
-            <span class="px-2">{{ item.quantity }}</span>
-            <img data-product="{{ item.product.id }}" data-action="remove" class="update-cart"
-              src="{% static 'images/arrow-down.png' %}" style="width: 24px; cursor: pointer;">
-          </div>
+        <div class="qty">
+          <button type="button" class="qty-btn update-cart" data-product="{{ item.product.id }}" data-action="remove" data-reload="true" aria-label="Decrease quantity of {{ item.product.name }}">&minus;</button>
+          <span class="qty-value">{{ item.quantity }}</span>
+          <button type="button" class="qty-btn update-cart" data-product="{{ item.product.id }}" data-action="add" data-reload="true" aria-label="Increase quantity of {{ item.product.name }}">+</button>
         </div>
-
-        <!-- Total -->
-        <div class="w-25 text-dark">$ {{ item.get_total|floatformat:2 }}</div>
+        <div class="row-total">{{ currency_symbol }}{{ item.get_total|floatformat:2 }}</div>
       </div>
-      {% empty %}
-      <div class="text-center py-4 text-muted">Your cart is empty.</div>
       {% endfor %}
-    </div>
+    </section>
+
+    <aside class="cart-summary surface">
+      <h2>Order Summary</h2>
+      <div class="summary-line"><span>Items</span><span>{{ order.get_cart_items }}</span></div>
+      <div class="summary-total">Total: {{ currency_symbol }}{{ order.get_cart_total|floatformat:2 }}</div>
+      <a class="btn btn-accent btn-lg btn-block" href="{% url 'checkout' %}">Proceed to Checkout</a>
+      <a class="btn btn-glass btn-block mt-2" href="{% url 'store' %}">Continue Shopping</a>
+    </aside>
   </div>
+  {% else %}
+  <div class="empty-state surface">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2.5 3.5h3l2.6 12h10.6l2-8.5H6.4"/></svg>
+    <h2>Your cart is empty</h2>
+    <p>Find the equipment you need and add it here.</p>
+    <a class="btn btn-brand" href="{% url 'store' %}">Browse equipment</a>
+  </div>
+  {% endif %}
 </div>
 {% endblock content %}
