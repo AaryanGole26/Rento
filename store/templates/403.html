@@ -1,0 +1,9 @@
+{% extends 'store/auth_base.html' %}
+
+{% block title %}Access Denied | Rento{% endblock %}
+
+{% block card %}
+<h1>Access Denied</h1>
+<p class="help">You don't have permission to view this page.</p>
+<a class="btn btn-brand" href="{% url 'store' %}">Back to Rento</a>
+{% endblock card %}

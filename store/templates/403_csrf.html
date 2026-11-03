@@ -1,0 +1,9 @@
+{% extends 'store/auth_base.html' %}
+
+{% block title %}Page Expired | Rento{% endblock %}
+
+{% block card %}
+<h1>Page Expired</h1>
+<p class="help">This page was open too long or your session changed. Please go back and try again.</p>
+<a class="btn btn-brand" href="{% url 'store' %}">Back to Rento</a>
+{% endblock card %}

@@ -1,0 +1,56 @@
+{% extends 'store/main.html' %}
+
+{% block title %}Order #{{ order.id }} | Rento{% endblock %}
+
+{% block content %}
+<section class="status-panel surface">
+  {% if order.status == 'paid' %}
+    <svg class="status-icon status-paid" viewBox="0 0 76 76" aria-hidden="true"><circle cx="38" cy="38" r="35"/><path d="M23 39l10 10 20-22"/></svg>
+    <h1>Payment successful</h1>
+    <p class="mb-0">Thank you! Order #{{ order.id }} is confirmed.</p>
+  {% elif order.status == 'review' %}
+    <svg class="status-icon status-pending" viewBox="0 0 76 76" aria-hidden="true"><circle cx="38" cy="38" r="35"/><path d="M38 20v19l12 8"/></svg>
+    <h1>Payment received</h1>
+    <p class="mb-0">Thank you! We're confirming your payment for order #{{ order.id }}, and your order will go ahead once that's done.</p>
+  {% elif order.status == 'pending' %}
+    <svg class="status-icon status-pending" viewBox="0 0 76 76" aria-hidden="true"><circle cx="38" cy="38" r="35"/><path d="M38 20v19l12 8"/></svg>
+    <h1>Payment not confirmed yet</h1>
+    <p>Order #{{ order.id }} has not been paid. If you just paid, wait a moment and refresh this page.</p>
+    <div class="status-actions">
+      <a class="btn btn-glass" href="{% url 'order_detail' order.id %}">Refresh</a>
+      <a class="btn btn-brand" href="{% url 'checkout' %}">Back to checkout</a>
+    </div>
+  {% else %}
+    <svg class="status-icon status-failed" viewBox="0 0 76 76" aria-hidden="true"><circle cx="38" cy="38" r="35"/><path d="M26 26l24 24M50 26L26 50"/></svg>
+    <h1>Payment failed</h1>
+    <p>
+      {% if payment.error_message %}{{ payment.error_message }}{% else %}Order #{{ order.id }} was not paid.{% endif %}
+      Your cart has been kept, so you can try again.
+    </p>
+    <div class="status-actions">
+      <a class="btn btn-accent" href="{% url 'checkout' %}">Try again</a>
+    </div>
+  {% endif %}
+</section>
+
+<section class="surface panel">
+  <h2 class="panel-title">Order summary</h2>
+  {% for item in items %}
+  <div class="order-line">
+    <span>{% if item.product %}{{ item.product.name }}{% else %}Item no longer listed{% endif %} &times; {{ item.quantity }}</span>
+    <span>{{ currency_symbol }}{{ item.get_total|floatformat:2 }}</span>
+  </div>
+  {% endfor %}
+  <div class="order-line order-total">
+    <span>Total</span>
+    <span>{{ currency_symbol }}{{ order.get_cart_total|floatformat:2 }}</span>
+  </div>
+  {% if order.transaction_id %}
+  <p class="order-meta">Transaction ID: {{ order.transaction_id }}</p>
+  {% endif %}
+  {% if shipping_address %}
+  <p class="order-meta">Shipping to: {{ shipping_address.address }}, {{ shipping_address.city }}, {{ shipping_address.state }} {{ shipping_address.zipcode }}</p>
+  {% endif %}
+  <a class="btn btn-glass mt-4" href="{% url 'store' %}">Continue Shopping</a>
+</section>
+{% endblock content %}

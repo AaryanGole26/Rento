@@ -1,76 +1,36 @@
 {% extends 'store/main.html' %}
-{% load static %}
+
 {% block content %}
+<section class="hero surface blueprint">
+  <h1>Engineering gear, <span class="accent">ready when you are.</span></h1>
+  <p>Rent the tools your next project needs, from soldering irons and drafters to laptops and cameras.</p>
+  <div class="hero-actions">
+    <a class="btn btn-accent btn-lg" href="#catalogue">Browse equipment</a>
+    <a class="btn btn-glass btn-lg" href="#services">What we offer</a>
+  </div>
+</section>
 
-<style>
-	.thumbnail {
-		width: 100%;
-		height: 220px;
-		object-fit: cover;
-		border-radius: 12px 12px 0 0;
-		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-		transition: transform 0.3s ease;
-	}
+<section id="catalogue" class="section">
+  <h2 class="section-title">Available Equipment</h2>
+  <div class="product-grid">
+    {% for product in products %}
+    <article class="product-card box-element product surface">
+      <div class="thumb-wrap">
+        <img class="thumbnail" src="{{ product.imageURL }}" alt="{{ product.name }}" width="640" height="360" decoding="async"{% if forloop.counter > 3 %} loading="lazy"{% endif %}>
+      </div>
+      <div class="product-body">
+        <h3>{{ product.name }}</h3>
+        <div class="product-footer">
+          <span class="price">{{ currency_symbol }}{{ product.price|floatformat:2 }}</span>
+          <button type="button" data-product="{{ product.id }}" data-name="{{ product.name }}" data-action="add" class="btn btn-brand update-cart">Add to Cart</button>
+        </div>
+      </div>
+    </article>
+    {% empty %}
+    <p class="text-muted">No equipment is listed right now. Please check back soon.</p>
+    {% endfor %}
+  </div>
+</section>
 
-	.thumbnail:hover {
-		transform: scale(1.02);
-	}
-
-	.box-element.product {
-		background: rgba(255, 255, 255, 0.8);
-		backdrop-filter: blur(6px);
-		-webkit-backdrop-filter: blur(6px);
-		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-		padding: 20px;
-		border-radius: 0 0 12px 12px;
-		transition: all 0.3s ease;
-		margin-bottom: 40px;
-	}
-
-	.box-element.product:hover {
-		transform: translateY(-5px);
-		box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
-	}
-
-	.add-btn {
-		border-radius: 8px;
-		font-weight: 500;
-		transition: all 0.2s ease;
-	}
-
-	.add-btn:hover {
-		background-color: #007bff;
-		color: white;
-		border-color: #007bff;
-	}
-
-	h6 strong {
-		font-size: 1.1rem;
-		color: #333;
-	}
-
-	h4 strong {
-		color: #28a745;
-		font-weight: 600;
-	}
-</style>
-
-<div class="row">
-	{% for product in products %}
-	<div class="col-lg-4 col-md-6 mb-4 d-flex align-items-stretch">
-		<div class="w-100">
-			<img class="thumbnail" src="{{ product.imageURL }}">
-			<div class="box-element product">
-				<h6><strong>{{ product.name }}</strong></h6>
-				<hr>
-				<button data-product="{{ product.id }}" data-action="add" class="btn btn-outline-secondary add-btn update-cart">
-					Add to Cart
-				</button>
-				<h4 style="display: inline-block; float: right"><strong>$ {{ product.price }}</strong></h4>
-			</div>
-		</div>
-	</div>
-	{% endfor %}
-</div>
-
+{% include 'store/_home_sections.html' %}
 {% endblock content %}
